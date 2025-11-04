@@ -1,9 +1,10 @@
+import { Stacked } from 'pages/index'
 import React from 'react'
 
 const Stack = () => {
   return (
-    <div>Stack</div>
+    <div>Stacked</div>
   )
 }
 
-export default Stack
+export default Stacked
