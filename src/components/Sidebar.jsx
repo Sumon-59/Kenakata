@@ -7,13 +7,13 @@ import { links } from '../data/dummy';
 import { useStateContext } from '../contexts/ContextProvider';
 
 const Sidebar = () => {
-  const { activeMenu, setActiveMenu, screenSize } = useStateContext();
+  const { activeMenu, setActiveMenu, screenSize, currentColor } = useStateContext();
 
-  const handleCloseSideBar =  () => {
-    if(activeMenu && screenSize <= 900){
+  const handleCloseSideBar = () => {
+    if (activeMenu && screenSize <= 900) {
       setActiveMenu(false);
     }
-  }
+  };
 
   const activeLink =
     'flex items-center gap-5 pl-4 pt-3 pb-2.5 rounded-lg text-white text-md m-2';
@@ -28,16 +28,17 @@ const Sidebar = () => {
           <div className="flex justify-between items-center">
             <Link
               to="/"
-              onClick={handleCloseSideBar} // close sidebar on mobile
+              onClick={handleCloseSideBar}
               className="items-center gap-3 mt-4 flex text-2xl font-extrabold tracking-tight dark:text-white text-slate-900"
             >
               <SiShopware className="text-3xl" /> <span>KenaKata</span>
             </Link>
 
-            <TooltipComponent content="Close" position="BottomCenter">
+            <TooltipComponent content="Menu" position="BottomCenter">
               <button
                 type="button"
-                onClick={() => setActiveMenu(prev => !prev)} // toggle sidebar
+                onClick={() => setActiveMenu(prev => !prev)}
+                style={{ color: currentColor }}
                 className="text-xl rounded-full p-2 hover:bg-light-gray block md:hidden"
               >
                 <MdOutlineCancel />
@@ -55,11 +56,14 @@ const Sidebar = () => {
                     to={`/${link.name}`}
                     key={link.name}
                     onClick={handleCloseSideBar}
+                    style={({ isActive }) => ({
+                      backgroundColor: isActive ? currentColor : '',
+                    })}
                     className={({ isActive }) =>
                       isActive ? activeLink : normalLink
                     }
                   >
-                    {React.cloneElement(link.icon, { className: 'text-2xl' })}
+                    {link.icon}
                     <span className="capitalize">{link.name}</span>
                   </NavLink>
                 ))}

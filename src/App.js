@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import '@syncfusion/ej2/material.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { FiSettings } from 'react-icons/fi';
 import { TooltipComponent } from '@syncfusion/ej2-react-popups';
@@ -28,10 +29,31 @@ import './App.css';
 import { useStateContext } from './contexts/ContextProvider';
 
 const App = () => {
-  const { activeMenu } = useStateContext();
+  const {
+    activeMenu,
+    themeSettings,
+    setThemeSettings,
+    currentColor,
+    currentMode,
+    // যদি ContextProvider এ এগুলো expose করো:
+    setCurrentColor,
+    setCurrentMode,
+  } = useStateContext();
+
+  // LocalStorage থেকে saved theme load করার জন্য
+  useEffect(() => {
+    const currentThemeColor = localStorage.getItem('colorMode');
+    const currentThemeMode = localStorage.getItem('themeMode');
+    if (currentThemeColor) {
+      setCurrentColor(currentThemeColor);
+    }
+    if (currentThemeMode) {
+      setCurrentMode(currentThemeMode);
+    }
+  }, [setCurrentColor, setCurrentMode]);
 
   return (
-    <div>
+    <div className={currentMode === 'Dark' ? 'dark' : ''}>
       <BrowserRouter>
         <div className="flex relative dark:bg-main-dark-bg">
           {/* Settings Button */}
@@ -40,7 +62,8 @@ const App = () => {
               <button
                 type="button"
                 className="text-xl p-3 hover:drop-shadow-xl hover:bg-light-gray text-white"
-                style={{ background: 'blue', borderRadius: '50%' }}
+                onClick={() => setThemeSettings(true)}
+                style={{ background: currentColor, borderRadius: '50%' }}
               >
                 <FiSettings />
               </button>
@@ -53,13 +76,19 @@ const App = () => {
               <Sidebar />
             </div>
           ) : (
-            <div className="w-0">
+            <div className="w-0 dark:bg-secondary-dark-bg">
               <Sidebar />
             </div>
           )}
 
           {/* Navbar & Main Content */}
-          <div className={`dark:bg-main-bg bg-main-bg min-h-screen w-full ${activeMenu ? 'md:ml-72' : 'flex-2'}`}>
+          <div
+            className={
+              activeMenu
+                ? 'dark:bg-main-dark-bg bg-main-bg min-h-screen md:ml-72 w-full'
+                : 'bg-main-bg dark:bg-main-dark-bg w-full min-h-screen flex-2'
+            }
+          >
             {/* Navbar */}
             <div className="fixed md:static bg-main-bg dark:bg-main-dark-bg navbar w-full">
               <Navbar />
@@ -67,6 +96,8 @@ const App = () => {
 
             {/* Main Content (Routes) */}
             <div>
+              {themeSettings && <ThemeSettings />}
+
               <Routes>
                 {/* Dashboard */}
                 <Route path="/" element={<Ecommerce />} />
@@ -91,7 +122,8 @@ const App = () => {
                 <Route path="/stacked" element={<Stacked />} />
               </Routes>
             </div>
-            {/* <Footer />  // enable when ready */}
+
+            <Footer />
           </div>
         </div>
       </BrowserRouter>
